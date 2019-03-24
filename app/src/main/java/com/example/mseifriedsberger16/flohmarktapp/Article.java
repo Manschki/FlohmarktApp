@@ -85,8 +85,6 @@ public class Article {
                 ", phone=" + phone +
                 ", name='" + name + '\'' +
                 ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+                ", email='" + email + '\''+'}';
     }
 }
