@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("TAG", "onOptionsItemSelected: " + id );
         switch (id) {
             case R.id.menu_get:
-                String user = prefs.getString("username", " ");
+                String user = prefs.getString("username", "");
                 String username = "&username=" + user;
                 new MyAsyncTask(this).execute("?operation=get", username);
                 break;
@@ -193,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("TAG", "entered doInBackground");
             operation = strings[0];
 
+
             //Log.d("TAG", "url: "+URL+username+"/repos");
             String sJson = "";
             String finalUrl = "";
@@ -204,7 +205,10 @@ public class MainActivity extends AppCompatActivity {
                 switch (operation) {
 
                     case "?operation=get":
-                        finalUrl = URL + strings[0] +  strings[1];
+                        String username = strings[1];
+
+                        finalUrl = URL + operation +  username;
+
                         break;
                     case "?operation=add":
                         // sName,
