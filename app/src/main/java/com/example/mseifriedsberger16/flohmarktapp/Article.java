@@ -7,8 +7,9 @@ package com.example.mseifriedsberger16.flohmarktapp;
 public class Article {
     int id, price, phone;
     String name, username, email, password;
+    double lat, lng;
 
-    public Article(int id, int price, int phone, String name, String username, String email, String password) {
+    public Article(int id, int price, int phone, String name, String username, String email, String password, double lat, double lng) {
         this.id = id;
         this.price = price;
         this.phone = phone;
@@ -16,6 +17,8 @@ public class Article {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.lat = lat;
+        this.lng = lng;
     }
 
     public Article() {
@@ -77,6 +80,22 @@ public class Article {
         this.password = password;
     }
 
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
     @Override
     public String toString() {
         return "Article{" +
@@ -85,6 +104,10 @@ public class Article {
                 ", phone=" + phone +
                 ", name='" + name + '\'' +
                 ", username='" + username + '\'' +
-                ", email='" + email + '\''+'}';
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", lat=" + lat +
+                ", lng=" + lng +
+                '}';
     }
 }

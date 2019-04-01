@@ -7,4 +7,9 @@
         android:title="Artikel löschen"
         app:showAsAction="never"
         />
+    <item
+        android:id="@+id/menu_distance"
+        android:title="Aktuelle Entfernung zum Artikel anzeigen"
+        app:showAsAction="never"
+        />
 </menu>

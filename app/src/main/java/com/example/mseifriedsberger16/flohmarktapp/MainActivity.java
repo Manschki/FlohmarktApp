@@ -1,11 +1,16 @@
 package com.example.mseifriedsberger16.flohmarktapp;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -19,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,10 +40,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final int RQ_PREFERENCES = 10;
+    private static final int RQ_ACCESS_FINE_LOCATION = 1;
     List<Article> articles = new LinkedList<>();
     private ListView listView;
     private ArrayAdapter<Article> adapter;
     private SharedPreferences prefs;
+    private boolean isGPSAllowed = false;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +61,27 @@ public class MainActivity extends AppCompatActivity {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //new MyAsyncTask(this).execute("?operation=get", "&username=admin");
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RQ_ACCESS_FINE_LOCATION);
+        } else {
+            gpsGranted();
+        }
+        registerSystemService();
+    }
+
+    private void registerSystemService() {
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        // from Api 23 and above you can call getSystemService this way:
+        // locationManager = (LocationManager) getSystemService(LocationManager.class);
+    }
+
+    private void gpsGranted() {
+        Log.d("TAG", "gps permission granted!");
+        isGPSAllowed = true;
+        //showAvailableProviders();
+
     }
 
     @Override
@@ -61,6 +91,23 @@ public class MainActivity extends AppCompatActivity {
             getMenuInflater().inflate(R.menu.context_menu, menu);
         }
         super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions,
+                                           int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode,
+                permissions,
+                grantResults);
+
+        if (requestCode == RQ_ACCESS_FINE_LOCATION) {
+            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                //user does not allow
+            } else {
+                gpsGranted();
+            }
+        }
     }
 
     @Override
@@ -79,6 +126,34 @@ public class MainActivity extends AppCompatActivity {
             }
 
             return true;
+        } else if (item.getItemId() == R.id.menu_distance) {
+            AdapterView.AdapterContextMenuInfo info =
+                    (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+            Article a;
+            if (info != null) {
+                int pos = info.position;
+                a = adapter.getItem(pos);
+                Location l = new Location("End");
+                l.setLatitude(a.getLat());
+                l.setLongitude(a.getLng());
+
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                }
+                Location location = locationManager.getLastKnownLocation(
+                        LocationManager.GPS_PROVIDER);
+
+
+                float distance = location.distanceTo(l);
+
+                TextView t = new TextView(this);
+                t.setText("Distanz zum Artikel: " + distance);
+                new AlertDialog.Builder(this)
+                        .setMessage("Distanz zum Artikel")
+                        .setView(t)
+                        .setPositiveButton("OK", null)
+                        .show();
+
+            }
         }
         return super.onContextItemSelected(item);
 
@@ -93,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        Log.d("TAG", "onOptionsItemSelected: " + id );
+        Log.d("TAG", "onOptionsItemSelected: " + id);
         switch (id) {
             case R.id.menu_get:
                 String user = prefs.getString("username", " ");
@@ -118,28 +193,67 @@ public class MainActivity extends AppCompatActivity {
                 phone.setHint("Telefon");
                 phone.setInputType(InputType.TYPE_CLASS_PHONE);
                 linearLayout.addView(phone);
+                EditText lat = new EditText(this);
+                lat.setHint("Latitude");
+                lat.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                linearLayout.addView(lat);
+                EditText lng = new EditText(this);
+                lng.setHint("Longitude");
+                lng.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                linearLayout.addView(lng);
 
                 new AlertDialog.Builder(this)
                         .setTitle("Artikel als " + prefs.getString("username", "") + " hinzufügen")
                         .setView(linearLayout)
                         .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                            String sEmail = email.getText().toString().trim();
-                            String sPhone = phone.getText().toString().trim();
-                            String sName = name.getText().toString().trim();
-                            String sPrice = price.getText().toString().trim();
+                            String sEmail = email.getText().toString();
+                            String sPhone = phone.getText().toString();
+                            String sName = name.getText().toString();
+                            String sPrice = price.getText().toString();
+                            String sLat = lat.getText().toString();
+                            String sLng = lng.getText().toString();
+
                             if (!sEmail.isEmpty() && !sPhone.isEmpty() && !sName.isEmpty() && !sPrice.isEmpty()) {
                                 new MyAsyncTask(this).execute("?operation=add",
                                         sName,
                                         sPrice,
                                         sEmail,
-                                        sPhone
-                                       );
+                                        sPhone,
+                                        sLat,
+                                        sLng
+                                );
 
 
                             } else {
                                 new AlertDialog.Builder(this).setTitle("Fehler").setMessage("Mindestens ein Feld ist leer!").show();
                             }
                         })
+                        .setNeutralButton("Koordinaten übernehmen", ((dialog, which) -> {
+                            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            }
+                            Location location = locationManager.getLastKnownLocation(
+                                    LocationManager.GPS_PROVIDER);
+
+                            String sEmail = email.getText().toString();
+                            String sPhone = phone.getText().toString();
+                            String sName = name.getText().toString();
+                            String sPrice = price.getText().toString();
+                            String sLat = String.valueOf(location.getLatitude());
+                            String sLng = String.valueOf(location.getLongitude());
+
+                            if (!sEmail.isEmpty() && !sPhone.isEmpty() && !sName.isEmpty() && !sPrice.isEmpty()) {
+                                new MyAsyncTask(this).execute("?operation=add",
+                                        sName,
+                                        sPrice,
+                                        sEmail,
+                                        sPhone,
+                                        sLat,
+                                        sLng
+                                );
+                            } else {
+                                new AlertDialog.Builder(this).setTitle("Fehler").setMessage("Mindestens ein Feld ist leer!").show();
+                            }
+                        }))
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
 
@@ -218,7 +332,9 @@ public class MainActivity extends AppCompatActivity {
                                 + "&name=" + strings[1]
                                 + "&price=" + strings[2]
                                 + "&email=" + strings[3]
-                                + "&phone=" + strings[4];
+                                + "&phone=" + strings[4]
+                                + "&lat=" + strings[5]
+                                + "&lon=" + strings[6];
                         break;
                     case "?operation=delete":
                         finalUrl = URL
@@ -279,8 +395,10 @@ public class MainActivity extends AppCompatActivity {
                             String name = o.getString("name");
                             String username = o.getString("username");
                             String email = o.getString("email");
+                            double lat = o.getDouble("lat");
+                            double lng = o.getDouble("lon");
 
-                            showArticles.add(new Article(id, price, phone, name, username, email, prefs.getString("password", "")));
+                            showArticles.add(new Article(id, price, phone, name, username, email, prefs.getString("password", ""), lat, lng));
                         }
                     }
                     //if (jobject.getInt("code") == 0) {
@@ -307,6 +425,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
+
 
 
 
