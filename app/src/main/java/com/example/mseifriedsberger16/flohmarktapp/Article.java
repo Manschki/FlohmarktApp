@@ -1,10 +1,12 @@
 package com.example.mseifriedsberger16.flohmarktapp;
 
+import java.io.Serializable;
+
 /**
  * Created by mseifriedsberger16 on 19.03.2019.
  */
 
-public class Article {
+public class Article implements Serializable {
     int id, price, phone;
     String name, username, email, password;
     double lat, lng;

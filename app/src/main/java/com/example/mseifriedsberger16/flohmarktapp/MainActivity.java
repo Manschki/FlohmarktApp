@@ -41,12 +41,13 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final int RQ_PREFERENCES = 10;
     private static final int RQ_ACCESS_FINE_LOCATION = 1;
-    List<Article> articles = new LinkedList<>();
+    //List<Article> articles = new LinkedList<>();
     private ListView listView;
     private ArrayAdapter<Article> adapter;
     private SharedPreferences prefs;
     private boolean isGPSAllowed = false;
     private LocationManager locationManager;
+    private Context ctx = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,13 +63,23 @@ public class MainActivity extends AppCompatActivity {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //new MyAsyncTask(this).execute("?operation=get", "&username=admin");
 
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        /*if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RQ_ACCESS_FINE_LOCATION);
         } else {
             gpsGranted();
         }
-        registerSystemService();
+        registerSystemService();*/
+      /*  listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
+                Article a = adapter.getItem(pos);
+
+                Intent i = new Intent(ctx, DetailsActivity.class);
+                i.putExtra("article", a);
+                startActivity(i);
+            }
+        });*/
     }
 
     private void registerSystemService() {
@@ -133,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
             if (info != null) {
                 int pos = info.position;
                 a = adapter.getItem(pos);
-                Location l = new Location("End");
+                Location l = new Location(locationManager.GPS_PROVIDER);
                 l.setLatitude(a.getLat());
                 l.setLongitude(a.getLng());
 
@@ -144,9 +155,10 @@ public class MainActivity extends AppCompatActivity {
 
 
                 float distance = location.distanceTo(l);
+                distance = distance/1000;
 
                 TextView t = new TextView(this);
-                t.setText("Distanz zum Artikel: " + distance);
+                t.setText("Distanz zum Artikel: " + distance + " km");
                 new AlertDialog.Builder(this)
                         .setMessage("Distanz zum Artikel")
                         .setView(t)
