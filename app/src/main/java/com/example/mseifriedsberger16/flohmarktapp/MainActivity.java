@@ -9,10 +9,10 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -63,23 +63,33 @@ public class MainActivity extends AppCompatActivity {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //new MyAsyncTask(this).execute("?operation=get", "&username=admin");
 
-        /*if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RQ_ACCESS_FINE_LOCATION);
         } else {
             gpsGranted();
         }
-        registerSystemService();*/
-      /*  listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        registerSystemService();
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
                 Article a = adapter.getItem(pos);
+                if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                }
+                Location l = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
+                Location loc = new Location(locationManager.GPS_PROVIDER);
+                loc.setLatitude(a.getLat());
+                loc.setLongitude(a.getLng());
+
+                float distance = l.distanceTo(loc);
+                distance = distance/1000;
 
                 Intent i = new Intent(ctx, DetailsActivity.class);
                 i.putExtra("article", a);
+                i.putExtra("distance", distance);
                 startActivity(i);
             }
-        });*/
+        });
     }
 
     private void registerSystemService() {

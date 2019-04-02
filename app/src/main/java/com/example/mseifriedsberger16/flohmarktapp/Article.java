@@ -100,16 +100,6 @@ public class Article implements Serializable {
 
     @Override
     public String toString() {
-        return "Article{" +
-                "id=" + id +
-                ", price=" + price +
-                ", phone=" + phone +
-                ", name='" + name + '\'' +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", lat=" + lat +
-                ", lng=" + lng +
-                '}';
+        return name + ": " + price;
     }
 }
