@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class RightFragment extends Fragment {
@@ -49,6 +50,15 @@ public class RightFragment extends Fragment {
         Log.d(TAG, "intializeViews: entered");
         this.view = view;
         prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+
+        Button call = view.findViewById(R.id.call);
+        call.setOnClickListener(v -> call(v));
+
+        Button mail = view.findViewById(R.id.sendEmail);
+        mail.setOnClickListener(v -> sendMail(v));
+
+        Button map = view.findViewById(R.id.map);
+        map.setOnClickListener(v -> map(v));
 
     }
     @Override

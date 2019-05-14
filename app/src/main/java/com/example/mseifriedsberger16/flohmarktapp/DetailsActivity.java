@@ -1,17 +1,11 @@
 package com.example.mseifriedsberger16.flohmarktapp;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.TextView;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -72,7 +66,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
 
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+/*    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode != RQ_CALL_PHONE) return;
@@ -81,9 +75,9 @@ public class DetailsActivity extends AppCompatActivity {
         } else {
             dial();
         }
-    }
+    }*/
 
-    private void dial() {
+/*    private void dial() {
         String phone = "tel:" + a.getPhone();
         Uri uri = Uri.parse(phone);
         Intent intent = new Intent(Intent.ACTION_CALL, uri);
@@ -125,5 +119,5 @@ public class DetailsActivity extends AppCompatActivity {
 
 
         startActivity(intent);
-    }
+    }*/
 }

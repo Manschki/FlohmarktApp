@@ -39,23 +39,28 @@ public class LeftFragment extends Fragment {
 
     private static final String TAG = LeftFragment.class.getSimpleName();
     private ListView listView;
-    private Context ctx = getActivity();
+    private Context ctx;
     private ArrayAdapter<Article> adapter;
     Article selected;
     private OnSelectionChangedListener listener;
-    private SharedPreferences prefs;
+    private SharedPreferences Fprefs;
     private View view;
     private LocationManager locationManager;
     private boolean isGPSAllowed = false;
+    private SharedPreferences prefs;
 
 
     @Override
     public void onAttach(Context context) {
+
         Log.d(TAG, "onAttach: entered");
         super.onAttach(context);
+        ctx = context;
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         getData();
-        if (context instanceof OnSelectionChangedListener) {
-            listener = (OnSelectionChangedListener) context;
+        if (ctx instanceof OnSelectionChangedListener) {
+            listener = (OnSelectionChangedListener) ctx;
         } else {
             Log.d(TAG, "onAttach: Activity does not implement OnSelectionChangedListener");
         }
@@ -84,6 +89,7 @@ public class LeftFragment extends Fragment {
         Log.d(TAG, "onCreateView: entered");
         // Inflate the layout for ctx fragment
         View view = inflater.inflate(R.layout.fragment_left, container, false);
+        setHasOptionsMenu(true);
         initializeViews(view);
         adapter = new ArrayAdapter<>(ctx,android.R.layout.simple_list_item_1);
         return view;
@@ -93,7 +99,7 @@ public class LeftFragment extends Fragment {
         Log.d(TAG, "initializeViews: entered");
         this.view = view;
         listView = view.findViewById(R.id.listView);
-        
+        registerForContextMenu(listView);
         listView.setOnItemClickListener
                 ((parent, view1, position, id) -> itemSelected(position));
     }
@@ -107,7 +113,7 @@ public class LeftFragment extends Fragment {
     public void onStart() {
         Log.d(TAG, "onStart: entered");
         super.onStart();
-        prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+
 
         listView.setAdapter(adapter);
     }
@@ -116,7 +122,7 @@ public class LeftFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.options_menu, menu);
 
-        super.onCreateOptionsMenu(menu, inflater);
+        //super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -166,7 +172,7 @@ public class LeftFragment extends Fragment {
                             String sLng = lng.getText().toString();
 
                             if (!sEmail.isEmpty() && !sPhone.isEmpty() && !sName.isEmpty() && !sPrice.isEmpty()) {
-                                new MyAsyncTask(ctx).execute("?operation=add",
+                                new MyAsyncTask(ctx, this).execute("?operation=add",
                                         sName,
                                         sPrice,
                                         sEmail,
@@ -194,7 +200,7 @@ public class LeftFragment extends Fragment {
                             String sLng = String.valueOf(location.getLongitude());
 
                             if (!sEmail.isEmpty() && !sPhone.isEmpty() && !sName.isEmpty() && !sPrice.isEmpty()) {
-                                new MyAsyncTask(ctx).execute("?operation=add",
+                                new MyAsyncTask(ctx, this).execute("?operation=add",
                                         sName,
                                         sPrice,
                                         sEmail,
@@ -254,7 +260,7 @@ public class LeftFragment extends Fragment {
                 int pos = info.position;
                 a = adapter.getItem(pos);
                 String id = String.valueOf(a.getId());
-                new MyAsyncTask(ctx).execute("?operation=delete", id);
+                new MyAsyncTask(ctx, this).execute("?operation=delete", id);
 
 
             }
@@ -308,7 +314,7 @@ public class LeftFragment extends Fragment {
     public void getData(){
         String user = prefs.getString("username", "");
         String username = "&username=" + user;
-        new MyAsyncTask(ctx).execute("?operation=get", username);
+        new MyAsyncTask(ctx, this).execute("?operation=get", username);
 
     }
 

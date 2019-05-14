@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements OnSelectionChange
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        locationManager = (LocationManager) ctx.getSystemService(LOCATION_SERVICE);
         rightFragment = (RightFragment) getSupportFragmentManager().findFragmentById(R.id.fragRight);
         showRight = rightFragment != null && rightFragment.isInLayout();
 
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements OnSelectionChange
         distance = distance/1000;
 
         if(showRight){
-            rightFragment.show(pos, item, distance, this);
+            rightFragment.show(pos, item, distance);
         }
     }
 }

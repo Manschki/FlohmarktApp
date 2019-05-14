@@ -32,8 +32,9 @@ public class MyAsyncTask extends AsyncTask<String, Integer, String> {
     private String operation;
 
 
-    public MyAsyncTask(Context ctx) {
+    public MyAsyncTask(Context ctx, LeftFragment leftFragment) {
         this.ctx = ctx;
+        this.leFr = leftFragment;
         prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
@@ -160,7 +161,7 @@ public class MyAsyncTask extends AsyncTask<String, Integer, String> {
                 if (!operation.equals("?operation=get")) {
                     String user1 = prefs.getString("username", " ");
                     String username1 = "&username=" + user1;
-                    new MyAsyncTask(ctx).execute("?operation=get", username1);
+                    new MyAsyncTask(ctx, leFr).execute("?operation=get", username1);
                 }
                 //}
 
