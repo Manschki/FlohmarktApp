@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.example.mseifriedsberger16.flohmarktapp.MainActivity">
-
-    <ListView
+    android:orientation="vertical">
+    <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/listView"
-        android:fastScrollEnabled="true"/>
-
+        android:id="@+id/fragLeft"
+        android:name="com.example.mseifriedsberger16.flohmarktapp.LeftFragment" />
 </LinearLayout>
