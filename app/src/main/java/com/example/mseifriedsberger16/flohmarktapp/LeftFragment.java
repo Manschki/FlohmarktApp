@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -92,6 +93,19 @@ public class LeftFragment extends Fragment {
         setHasOptionsMenu(true);
         initializeViews(view);
         adapter = new ArrayAdapter<>(ctx,android.R.layout.simple_list_item_1);
+        int orientation = getResources().getConfiguration().orientation;
+        if(orientation == Configuration.ORIENTATION_PORTRAIT){
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent i = new Intent(ctx, DetailsActivity.class);
+                    Article a = adapter.getItem(position);
+                    i.putExtra("item", a);
+                    i.putExtra("pos", position);
+                    startActivity(i);
+                }
+            });
+        }
         return view;
     }
 

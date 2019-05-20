@@ -1,14 +1,20 @@
 package com.example.mseifriedsberger16.flohmarktapp;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity implements OnSelectionChangedListener{
     private static final int RQ_CALL_PHONE = 1;
     //int id, int price, int phone, String name, String username, String email, String password, double lat, double lng
     TextView id;
@@ -21,20 +27,28 @@ public class DetailsActivity extends AppCompatActivity {
     TextView lng;
     TextView dis;
 
-    Article a;
     SharedPreferences prefs;
+    private Context ctx = this;
+    private RightFragment rightFragment;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        int orientation = getResources().getConfiguration().orientation;
-        if(orientation != Configuration.ORIENTATION_PORTRAIT){
-            return;
-        }
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        locationManager = (LocationManager) ctx.getSystemService(LOCATION_SERVICE);
+        rightFragment = (RightFragment) getSupportFragmentManager().findFragmentById(R.id.fragRight);
+        Article a = (Article) getIntent().getSerializableExtra("item");
+        int pos = (int) getIntent().getSerializableExtra("pos");
+
+        onSelectionChanged(pos, a);
+
+
+
+/*        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -60,8 +74,23 @@ public class DetailsActivity extends AppCompatActivity {
         email.setText(a.getEmail());
         lat.setText(String.valueOf(a.getLat()));
         lng.setText(String.valueOf(a.getLng()));
-        dis.setText(String.valueOf(distance) + "km");
+        dis.setText(String.valueOf(distance) + "km");*/
 
+
+    }
+
+    @Override
+    public void onSelectionChanged(int pos, Article item) {
+        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        Location l = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
+        Location loc = new Location(locationManager.GPS_PROVIDER);
+        loc.setLatitude(item.getLat());
+        loc.setLongitude(item.getLng());
+
+        float distance = l.distanceTo(loc);
+        distance = distance/1000;
+        rightFragment.show(pos, item, distance);
 
     }
 
